@@ -1,0 +1,2 @@
+(this["webpackJsonptest-repetit"]=this["webpackJsonptest-repetit"]||[]).push([[0],{10:function(t,e,n){"use strict";n.r(e);var r=n(0),c=n.n(r),s=n(3),i=n.n(s),o=(n(8),n(1));var d=function(){return Object(o.jsx)("h1",{children:"Hello, World!"})};i.a.render(Object(o.jsx)(c.a.StrictMode,{children:Object(o.jsx)(d,{})}),document.getElementById("root"))},8:function(t,e,n){}},[[10,1,2]]]);
+//# sourceMappingURL=main.89dfbe49.chunk.js.map
