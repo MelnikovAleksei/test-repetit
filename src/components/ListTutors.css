@@ -1,0 +1,24 @@
+.list-tutors {
+  padding: 9px 21px 10px 21px;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+}
+
+.list-tutors__item {
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+@media screen and (min-width: 1152px) {
+  .list-tutors {
+    padding-bottom: 77px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .list-tutors__item {
+    max-width: 850px;
+    margin: 0 auto 20px auto;
+  }
+}
