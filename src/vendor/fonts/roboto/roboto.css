@@ -5,3 +5,11 @@
   font-display: swap;
   src: url('./Roboto-Regular.ttf') format('TrueType');
 }
+
+@font-face {
+  font-family: 'Roboto';
+  font-style:  normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./Roboto-Bold.ttf') format('TrueType');
+}
