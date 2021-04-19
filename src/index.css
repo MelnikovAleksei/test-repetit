@@ -4,6 +4,8 @@
 
 @import url(./components/Filter.css);
 
+@import url(./components/LoadingText.css);
+
 @import url(./components/SelectInput.css);
 
 @import url(./components/SubmitButton.css);

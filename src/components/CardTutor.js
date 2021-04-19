@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import NotAllowedImage from '../images/not-allowed-image.png';
 
 function CardTutor({
-  tutorId,
+  tutorData,
 }) {
-
-  const [tutorData, setTutorData] = useState({})
 
   const getName = (data) => {
     return `${data.firstName} ${data.patrName}`;
@@ -29,10 +27,6 @@ function CardTutor({
   const getMinPrice = (data) => {
     return `от ${Math.min.apply(null, data.teachingSubjects.map(elem => Number(elem.price))).toString()}`;
   };
-
-  useEffect(() => {
-    console.log(tutorId);
-  }, [tutorId])
 
   return (
     <article className="article">

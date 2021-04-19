@@ -6,6 +6,9 @@ function SelectInput({
   optionsData,
   propertyName,
   disabled,
+  onChange,
+  name,
+  required,
 }) {
   return (
     <div className="select-container">
@@ -13,8 +16,10 @@ function SelectInput({
         disabled={disabled}
         className="select"
         id="select"
-        name="select"
+        name={name}
         aria-label={title}
+        onChange={onChange}
+        required={required}
       >
         <option value="">{title}</option>
         {

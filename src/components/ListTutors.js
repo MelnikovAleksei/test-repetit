@@ -3,7 +3,7 @@ import CardTutor from './CardTutor';
 import ShowMoreButton from './ShowMoreButton';
 
 function ListTutors({
-  tutorsIds,
+  tutorsData,
 }) {
 
   const handleShowMoreClick = () => {
@@ -14,10 +14,10 @@ function ListTutors({
     <>
       <ul className="list-tutors">
         {
-          tutorsIds.map(tutorId => (
-            <li className="list-tutors__item" key={tutorId}>
+          tutorsData.map(data => (
+            <li className="list-tutors__item" key={data.id}>
               <CardTutor
-                tutorId={tutorId}
+                tutorData={data}
               />
             </li>
           ))
