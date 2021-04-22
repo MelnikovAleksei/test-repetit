@@ -29,6 +29,7 @@ function Filter({
 
   useEffect(() => {
     if (values.areaId) {
+      setDistrictsData([]);
       setIsLoadingDistrictsData(true);
       api.getDistricts(values.areaId)
         .then((data) => {
