@@ -1,5 +1,5 @@
 .list-tutors {
-  padding: 9px 21px 10px 21px;
+  padding: 23px 21px 10px 21px;
   margin: 0;
   box-sizing: border-box;
   list-style: none;
@@ -13,7 +13,7 @@
 @media screen and (min-width: 1152px) {
   .list-tutors {
     padding-bottom: 77px;
-    max-width: 1440px;
+    max-width: 1152px;
     margin: 0 auto;
   }
 

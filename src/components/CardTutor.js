@@ -25,7 +25,7 @@ function CardTutor({
   };
 
   const getMinPrice = (data) => {
-    return `от ${Math.min.apply(null, data.teachingSubjects.map(elem => Number(elem.price))).toString()}`;
+    return `от ${Math.min.apply(null, data.teachingSubjects.map(elem => Number(elem.price))).toString()} р`;
   };
 
   return (

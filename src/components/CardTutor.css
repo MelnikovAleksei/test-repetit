@@ -1,5 +1,5 @@
 .article {
-  padding: 9px;
+  padding: 11px 9px;
   box-sizing: border-box;
   display: flex;
   background: #FFFFFF;
@@ -12,15 +12,14 @@
   height: 57px;
   object-fit: cover;
   border-radius: 50%;
-  box-sizing: border-box;
-  padding: 7px;
+  padding: 6px 7px;
 }
 
 .article__container {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 0 9px;
+  padding: 0 5px;
 }
 
 .article__title,
@@ -28,7 +27,6 @@
 .article__text {
   box-sizing: border-box;
   margin: 0;
-  padding: 4px;
 }
 
 .article__title {
@@ -38,6 +36,7 @@
   font-size: 14px;
   line-height: 1.14;
   color: #000000;
+  padding: 4px;
 }
 
 .article__subtitle {
@@ -47,6 +46,7 @@
   font-size: 16px;
   line-height: 1.18;
   color: #000000;
+  padding: 4px 4px 1px 4px;
 }
 
 .article__text {
@@ -56,6 +56,7 @@
   font-size: 16px;
   line-height: 1.18;
   color: #009990;
+  padding: 0 4px;
 }
 
 @media screen and (min-width: 1152px) {
@@ -67,6 +68,8 @@
   .article__title {
     font-size: 18px;
     line-height: 1.16;
+    padding-top: 5px;
+    padding-bottom: 6px;
   }
 
   .article__title,
@@ -75,7 +78,14 @@
     line-height: 1.15;
   }
 
+  .article__subtitle {
+    padding-top: 5px;
+    padding-bottom: 2px;
+  }
+
   .article__text {
     color: #009990;
+    font-size: 20px;
+    line-height: 1.15;
   }
 }
