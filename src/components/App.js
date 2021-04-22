@@ -7,14 +7,21 @@ import api from '../utils/api';
 
 function App() {
 
+  const INIT_PAGE_NUMBER = 0;
+  const NUM_CARDS_TO_RENDER = 10;
+
   const [subjects, setSubjects] = useState([]);
   const [areas, setAreas] = useState([]);
   const [teacherIds, setTeacherIds] = useState(null);
   const [teachersData, setTeachersData] = useState([]);
 
+  const [curPage, setCurPage] = useState(0);
+
+  const [hasMorePages, setHasMorePages] = useState(false);
   const [isLoadingInitData, setIsLoadingInitData] = useState(false);
-  const [isLoadingTeachersData, setIsLoadingTeachersData] = useState(false);
+  const [isLoadingInitTeachersPage, setIsLoadingInitTeachersPage] = useState(false);
   const [isLoadingTeachersIds, setIsLoadingTeachersIds] = useState(false);
+  const [isLoadingTeachersData, setIsLoadingTeachersData] = useState(false);
 
   const getUrlFilterParamsStr = (paramsArr) => {
     const params = new URLSearchParams();
@@ -32,13 +39,21 @@ function App() {
     return params.toString();
   };
 
+  const getSubArrayBySize = (array, size = NUM_CARDS_TO_RENDER) => {
+    let result = [];
+    for (let index = 0; index < Math.ceil(array.length / size); index++) {
+      result[index] = array.slice((index * size), (index * size) + size);
+    }
+    return result;
+  }
+
   const handleSubmit = (data) => {
     setIsLoadingTeachersIds(true);
     const filterParamsArr = Object.keys(data).map(key => [key, data[key]]);
     const filterParams = getUrlFilterParamsStr(filterParamsArr)
     api.getTeacherIds(filterParams)
       .then((data) => {
-        setTeacherIds(data.data);
+        setTeacherIds(getSubArrayBySize(data.data));
       })
       .catch((err) => {
         console.log(err);
@@ -50,20 +65,42 @@ function App() {
 
   useEffect(() => {
     if (teacherIds) {
-      setIsLoadingTeachersData(true);
-      const params = getUrlSearchTeachersParamsStr(teacherIds);
-      api.getTeachersShortData(params)
+      setHasMorePages(teacherIds.length > 1)
+      setCurPage(INIT_PAGE_NUMBER);
+      setIsLoadingInitTeachersPage(true);
+      api.getTeachersShortData(getUrlSearchTeachersParamsStr(teacherIds[INIT_PAGE_NUMBER]))
         .then((data) => {
           setTeachersData(data.data);
+          setCurPage((prevState) => prevState + 1);
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          setIsLoadingTeachersData(false);
+          setIsLoadingInitTeachersPage(false);
         });
     }
   }, [teacherIds])
+
+  const handleShowMoreClick = () => {
+    setIsLoadingTeachersData(true);
+    api.getTeachersShortData(getUrlSearchTeachersParamsStr(teacherIds[curPage]))
+      .then((data) => {
+        setTeachersData(prevState => [...prevState, ...data.data]);
+        setCurPage((prevState) => prevState + 1);
+        if (teacherIds[curPage + 1] === undefined) {
+          setHasMorePages(false);
+        } else {
+          setHasMorePages(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoadingTeachersData(false);
+      });
+  }
 
   useEffect(() => {
     setIsLoadingInitData(true);
@@ -90,12 +127,16 @@ function App() {
         isLoadingData={isLoadingInitData || isLoadingTeachersIds || isLoadingTeachersData}
       />
       {
-        isLoadingTeachersData && (
+        isLoadingInitTeachersPage && (
           <LoadingText text="Загрузка..."/>
         )
       }
       <ListTutors
         tutorsData={teachersData}
+        handleShowMoreClick={handleShowMoreClick}
+        hasMorePages={hasMorePages}
+        isLoadingInitTeachersPage={isLoadingInitTeachersPage}
+        isLoadingTeachersData={isLoadingTeachersData}
       />
     </section>
   );
