@@ -8,12 +8,13 @@ import useFormValidation from '../hooks/useFormValidation';
 
 function Filter({
   onSubmit,
-  subjects,
-  areas,
-  isLoadingData,
 }) {
 
-  const [districtsData, setDistrictsData] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [districts, setDistricts] = useState([]);
+
+  const [isLoadingInitData, setIsLoadingInitData] = useState(false);
   const [isLoadingDistrictsData, setIsLoadingDistrictsData] = useState(false);
 
   const {
@@ -29,26 +30,42 @@ function Filter({
 
   useEffect(() => {
     if (values.areaId) {
-      setDistrictsData([]);
+      setDistricts([]);
       setIsLoadingDistrictsData(true);
       api.getDistricts(values.areaId)
         .then((data) => {
-          if (data.status === 200) {
-            setDistrictsData(data.data);
-            setIsLoadingDistrictsData(false);
-          }
+          setDistricts(data.data);
         })
         .catch((err) => {
           console.log(err);
         })
+        .finally(() => {
+          setIsLoadingDistrictsData(false);
+        })
     }
   }, [values.areaId])
+
+  useEffect(() => {
+    setIsLoadingInitData(true);
+    api.getInitialData()
+      .then((data) => {
+        const [subjects, areas] = data;
+        setSubjects(subjects.data);
+        setAreas(areas.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsLoadingInitData(false);
+      })
+  }, [])
 
   return (
     <form onSubmit={handleSubmit} className="form">
       <div className="form__container">
         <SelectInput
-          title={isLoadingData ? "Загрузка списка" : "Укажите предмет"}
+          title={isLoadingInitData ? "Загрузка списка" : "Укажите предмет"}
           optionsData={subjects}
           propertyName="name"
           name="subjectId"
@@ -56,7 +73,7 @@ function Filter({
           required={true}
         />
         <SelectInput
-          title={isLoadingData ? "Загрузка списка" : "Укажите город"}
+          title={isLoadingInitData ? "Загрузка списка" : "Укажите город"}
           optionsData={areas}
           propertyName="cityName"
           name="areaId"
@@ -65,7 +82,7 @@ function Filter({
         />
         <SelectInput
           title={isLoadingDistrictsData ? "Загрузка списка" : "Укажите район"}
-          optionsData={districtsData}
+          optionsData={districts}
           propertyName="name"
           name="districtId"
           onChange={handleChange}
@@ -74,7 +91,7 @@ function Filter({
       </div>
       <SubmitButton
         title="Применить фильтр"
-        disabled={!isValid || isLoadingData || isLoadingDistrictsData}
+        disabled={!isValid || isLoadingInitData || isLoadingDistrictsData}
       />
     </form>
   )
