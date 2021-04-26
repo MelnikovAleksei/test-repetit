@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Filter from './Filter';
-import LoadingText from './LoadingText';
 import ListTutors from './ListTutors';
+import FeedbackText from './FeedbackText';
 
 import api from '../utils/api';
 
 function App() {
+  const LOADING_TEXT = 'Загрузка списка репетиторов...';
+  const TEACHERS_NOT_FOUND_TEXT = 'По заданным параметрам ничего не найдено';
 
-  const INIT_PAGE_NUMBER = 0;
-  const NUM_CARDS_TO_RENDER = 10;
+  const [teacherIds, setTeacherIds] = useState([]);
 
-  const [subjects, setSubjects] = useState([]);
-  const [areas, setAreas] = useState([]);
-  const [teacherIds, setTeacherIds] = useState(null);
-  const [teachersData, setTeachersData] = useState([]);
+  const [hasTeachersIds, setHasTeachersIds] = useState(true);
 
-  const [curPage, setCurPage] = useState(0);
-
-  const [hasMorePages, setHasMorePages] = useState(false);
-  const [isLoadingInitData, setIsLoadingInitData] = useState(false);
-  const [isLoadingInitTeachersPage, setIsLoadingInitTeachersPage] = useState(false);
   const [isLoadingTeachersIds, setIsLoadingTeachersIds] = useState(false);
-  const [isLoadingTeachersData, setIsLoadingTeachersData] = useState(false);
 
   const getUrlFilterParamsStr = (paramsArr) => {
     const params = new URLSearchParams();
@@ -31,29 +23,21 @@ function App() {
     return params.toString();
   };
 
-  const getUrlSearchTeachersParamsStr = (paramsArr) => {
-    const params = new URLSearchParams();
-    paramsArr.forEach((param, index) => {
-      params.set(`Ids[${index}]`, param)
-    })
-    return params.toString();
-  };
-
-  const getSubArrayBySize = (array, size = NUM_CARDS_TO_RENDER) => {
-    let result = [];
-    for (let index = 0; index < Math.ceil(array.length / size); index++) {
-      result[index] = array.slice((index * size), (index * size) + size);
-    }
-    return result;
-  }
-
   const handleSubmit = (data) => {
     setIsLoadingTeachersIds(true);
+    setHasTeachersIds(true);
+    setTeacherIds([]);
     const filterParamsArr = Object.keys(data).map(key => [key, data[key]]);
     const filterParams = getUrlFilterParamsStr(filterParamsArr)
     api.getTeacherIds(filterParams)
       .then((data) => {
-        setTeacherIds(getSubArrayBySize(data.data));
+        if (data.data.length >= 1) {
+          setHasTeachersIds(true);
+          setTeacherIds(data.data);
+        } else {
+          setHasTeachersIds(false);
+          setTeacherIds(data.data);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -63,81 +47,27 @@ function App() {
       })
   };
 
-  useEffect(() => {
-    if (teacherIds) {
-      setHasMorePages(teacherIds.length > 1)
-      setCurPage(INIT_PAGE_NUMBER);
-      setIsLoadingInitTeachersPage(true);
-      api.getTeachersShortData(getUrlSearchTeachersParamsStr(teacherIds[INIT_PAGE_NUMBER]))
-        .then((data) => {
-          setTeachersData(data.data);
-          setCurPage((prevState) => prevState + 1);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoadingInitTeachersPage(false);
-        });
-    }
-  }, [teacherIds])
-
-  const handleShowMoreClick = () => {
-    setIsLoadingTeachersData(true);
-    api.getTeachersShortData(getUrlSearchTeachersParamsStr(teacherIds[curPage]))
-      .then((data) => {
-        setTeachersData(prevState => [...prevState, ...data.data]);
-        setCurPage((prevState) => prevState + 1);
-        if (teacherIds[curPage + 1] === undefined) {
-          setHasMorePages(false);
-        } else {
-          setHasMorePages(true);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoadingTeachersData(false);
-      });
-  }
-
-  useEffect(() => {
-    setIsLoadingInitData(true);
-    api.getInitialData()
-      .then((data) => {
-        const [subjects, areas] = data;
-        setSubjects(subjects.data);
-        setAreas(areas.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoadingInitData(false);
-      })
-  }, [])
-
   return (
     <section>
       <Filter
         onSubmit={handleSubmit}
-        areas={areas}
-        subjects={subjects}
-        isLoadingData={isLoadingInitData || isLoadingTeachersIds || isLoadingTeachersData}
+        isLoadingTeachersIds={isLoadingTeachersIds}
       />
       {
-        isLoadingInitTeachersPage && (
-          <LoadingText text="Загрузка..."/>
+        isLoadingTeachersIds && (
+          <FeedbackText  text={LOADING_TEXT}/>
         )
       }
-      <ListTutors
-        tutorsData={teachersData}
-        handleShowMoreClick={handleShowMoreClick}
-        hasMorePages={hasMorePages}
-        isLoadingInitTeachersPage={isLoadingInitTeachersPage}
-        isLoadingTeachersData={isLoadingTeachersData}
-      />
+      {
+        hasTeachersIds ? (
+          <ListTutors
+            tutorsIds={teacherIds}
+          />
+        ) : (
+          <FeedbackText text={TEACHERS_NOT_FOUND_TEXT}/>
+        )
+      }
+
     </section>
   );
 }
