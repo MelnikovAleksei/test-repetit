@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/test-repetit/static/css/main.d512dc9c.chunk.css",
-    "main.js": "/test-repetit/static/js/main.e06c074e.chunk.js",
-    "main.js.map": "/test-repetit/static/js/main.e06c074e.chunk.js.map",
+    "main.css": "/test-repetit/static/css/main.db6c6dc6.chunk.css",
+    "main.js": "/test-repetit/static/js/main.1fa966fc.chunk.js",
+    "main.js.map": "/test-repetit/static/js/main.1fa966fc.chunk.js.map",
     "runtime-main.js": "/test-repetit/static/js/runtime-main.3a5f4371.js",
     "runtime-main.js.map": "/test-repetit/static/js/runtime-main.3a5f4371.js.map",
     "static/js/2.3c2489f5.chunk.js": "/test-repetit/static/js/2.3c2489f5.chunk.js",
     "static/js/2.3c2489f5.chunk.js.map": "/test-repetit/static/js/2.3c2489f5.chunk.js.map",
     "index.html": "/test-repetit/index.html",
-    "static/css/main.d512dc9c.chunk.css.map": "/test-repetit/static/css/main.d512dc9c.chunk.css.map",
+    "static/css/main.db6c6dc6.chunk.css.map": "/test-repetit/static/css/main.db6c6dc6.chunk.css.map",
     "static/js/2.3c2489f5.chunk.js.LICENSE.txt": "/test-repetit/static/js/2.3c2489f5.chunk.js.LICENSE.txt",
     "static/media/index.css": "/test-repetit/static/media/Roboto-Regular.a8d6ac03.ttf",
     "static/media/not-allowed-image.9f9cc960.png": "/test-repetit/static/media/not-allowed-image.9f9cc960.png",
@@ -17,7 +17,7 @@
   "entrypoints": [
     "static/js/runtime-main.3a5f4371.js",
     "static/js/2.3c2489f5.chunk.js",
-    "static/css/main.d512dc9c.chunk.css",
-    "static/js/main.e06c074e.chunk.js"
+    "static/css/main.db6c6dc6.chunk.css",
+    "static/js/main.1fa966fc.chunk.js"
   ]
 }
