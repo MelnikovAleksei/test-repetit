@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import NotAllowedImage from '../images/not-allowed-image.png';
 
 function CardTutor({
