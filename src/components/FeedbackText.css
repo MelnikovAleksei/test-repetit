@@ -1,9 +1,9 @@
-.loading-text-container {
+.feedback-text-container {
   box-sizing: border-box;
   padding: 23px 21px 10px 21px;
 }
 
-.loading-text {
+.feedback-text {
   font-family: 'Roboto', sans-serif;
   font-style: normal;
   font-weight: bold;
@@ -13,7 +13,7 @@
 }
 
 @media screen and (min-width: 1152px) {
-  .loading-text-container {
+  .feedback-text-container {
     padding: 41px 40px 20px 40px;
     max-width: 1152px;
     margin: 0 auto;
