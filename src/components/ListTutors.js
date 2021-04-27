@@ -1,29 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
 
 import api from '../utils/api';
 
+const initialState = {
+  tutorsData: [],
+  tutorsPages: [],
+  nextPage: 0,
+  hasMorePages: false,
+  isLoadingData: false,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'RESET_LIST':
+      return {
+        ...state,
+        nextPage: 0,
+        hasMorePages: false,
+        tutorsData: []
+      }
+    case 'SET_TUTORS_DATA':
+      if (!state.tutorsPages[state.nextPage + 1]) {
+        return {
+          ...state,
+          hasMorePages: false,
+          tutorsData: [...state.tutorsData, ...action.payload]
+        }
+      } else {
+        return {
+          ...state,
+          hasMorePages: true,
+          nextPage: state.nextPage + 1,
+          tutorsData: [...state.tutorsData, ...action.payload]
+        }
+      }
+    case 'SET_IS_LOADING_DATA':
+      return {
+        ...state,
+        isLoadingData: action.payload,
+      }
+    case 'INCREMENT_PAGE':
+      return {
+        ...state,
+        nextPage: state.nextPage + 1,
+      }
+    case 'SET_TUTORS_PAGES':
+      return {
+        ...state,
+        tutorsPages: action.payload,
+      }
+    default:
+      return state;
+  }
+}
+
 function ListTutors({
   tutorsIds,
 }) {
 
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   const LOADING_TEXT = 'Загрузка данных...';
 
-  const INIT_PAGE_NUMBER = 0;
   const NUM_CARDS_TO_RENDER = 10;
 
-  const [tutorsPages, setTutorsPages] = useState(null);
-  const [tutorsData, setTutorsData] = useState([]);
-
-  const [curPage, setCurPage] = useState(0);
-
-  const [hasMorePages, setHasMorePages] = useState(false);
-
-  const [isLoadingTeachersData, setIsLoadingTeachersData] = useState(false);
-
-  const getUrlSearchTeachersParamsStr = (paramsArr) => {
+  const getUrlSearchParamsStr = (paramsArr) => {
     const params = new URLSearchParams();
     paramsArr.forEach((param, index) => {
       params.set(`Ids[${index}]`, param)
@@ -40,50 +84,50 @@ function ListTutors({
   }
 
   const handleShowMoreClick = () => {
-    setIsLoadingTeachersData(true);
-    api.getTeachersShortData(getUrlSearchTeachersParamsStr(tutorsPages[curPage]))
+    dispatch({ type: 'SET_IS_LOADING_DATA', payload: true });
+    api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
       .then((data) => {
-        setTutorsData(prevState => [...prevState, ...data.data]);
-        setCurPage((prevState) => prevState + 1);
-        if (tutorsPages[curPage + 1] === undefined) {
-          setHasMorePages(false);
-        } else {
-          setHasMorePages(true);
-        }
+        dispatch({ type: 'SET_TUTORS_DATA', payload: data.data });
       })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
-        setIsLoadingTeachersData(false);
+        dispatch({ type: 'SET_IS_LOADING_DATA', payload: false });
       });
   }
 
   useEffect(() => {
-    if (tutorsPages) {
-      setHasMorePages(tutorsPages.length > 1)
-      setCurPage(INIT_PAGE_NUMBER);
-      setIsLoadingTeachersData(true);
-      api.getTeachersShortData(getUrlSearchTeachersParamsStr(tutorsPages[INIT_PAGE_NUMBER]))
+    if (state.tutorsPages.length > 0) {
+      dispatch({ type: 'SET_IS_LOADING_DATA', payload: true });
+      api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
         .then((data) => {
-          setTutorsData(data.data);
-          setCurPage((prevState) => prevState + 1);
+          dispatch({ type: 'SET_TUTORS_DATA', payload: data.data });
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          setIsLoadingTeachersData(false);
+          dispatch({ type: 'SET_IS_LOADING_DATA', payload: false });
         });
     }
-  }, [tutorsPages])
+  }, [state.tutorsPages])
 
   useEffect(() => {
+    dispatch({ type: 'RESET_LIST' });
     if (tutorsIds.length >= 1) {
-      setTutorsPages(getSubArrayBySize(tutorsIds));
+      dispatch({
+        type: 'SET_TUTORS_PAGES',
+        payload: getSubArrayBySize(tutorsIds)
+      });
     } else {
-      setTutorsData([]);
-      setHasMorePages(false);
+      dispatch({
+        type: 'SET_TUTORS_DATA',
+        payload: []
+      });
+      dispatch({
+        type: 'NO_MORE_PAGES'
+      })
     }
   }, [tutorsIds])
 
@@ -91,7 +135,7 @@ function ListTutors({
     <>
       <ul className="list-tutors">
         {
-          tutorsData.map(data => (
+          state.tutorsData.map(data => (
             <li className="list-tutors__item" key={data.id}>
               <CardTutor
                 tutorData={data}
@@ -101,16 +145,16 @@ function ListTutors({
         }
       </ul>
       {
-        isLoadingTeachersData && (
+        state.isLoadingData && (
           <FeedbackText  text={LOADING_TEXT}/>
         )
       }
       {
-        hasMorePages && !isLoadingTeachersData && (
+        state.hasMorePages && !state.isLoadingData && (
           <ShowMoreButton
             title="Загрузить ещё"
             onClick={handleShowMoreClick}
-            disabled={isLoadingTeachersData}
+            disabled={state.isLoadingData}
           />
         )
       }
@@ -118,4 +162,4 @@ function ListTutors({
   )
 }
 
-export default ListTutors
+export default ListTutors;
