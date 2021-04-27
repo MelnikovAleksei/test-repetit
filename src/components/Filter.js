@@ -1,21 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import SelectInput from './SelectInput';
 import SubmitButton from './SubmitButton';
+import FeedbackText from './FeedbackText';
 
 import api from '../utils/api';
 
 import useFormValidation from '../hooks/useFormValidation';
 
+const initialState = {
+  isLoadingInitData: false,
+  isLoadingDistrictsData: false,
+  subjects: [],
+  areas: [],
+  districts: [],
+  initDataFetchError: null,
+  districtsDataFetchError: null,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'FETCH_INIT_DATA_START':
+      return {
+        ...state,
+        isLoadingInitData: true,
+      }
+    case 'FETCH_INIT_DATA_SUCCES':
+      const { subjects, areas } = action.payload;
+      return {
+        ...state,
+        subjects: subjects.data,
+        areas: areas.data,
+        initDataFetchError: null,
+      }
+    case 'FETCH_INIT_DATA_ERROR':
+      return {
+        ...state,
+        initDataFetchError: action.payload,
+      }
+    case 'FETCH_INIT_DATA_FINALLY':
+      return {
+        ...state,
+        isLoadingInitData: false,
+      }
+    case 'FETCH_DISTRICTS_DATA_START':
+      return {
+        ...state,
+        isLoadingDistrictsData: true,
+      }
+    case 'FETCH_DISTRICTS_DATA_SUCCES':
+        return {
+          ...state,
+          isLoadingDistrictsData: false,
+          districts: action.payload,
+          districtsDataFetchError: null,
+        }
+    case 'FETCH_DISTRICTS_DATA_ERROR':
+      return {
+        ...state,
+        districtsDataFetchError: action.payload,
+      }
+    case 'FETCH_DISTRICTS_DATA_FINALLY':
+      return {
+        ...state,
+        isLoadingDistrictsData: false,
+      }
+    default:
+      return {
+        state
+      }
+  }
+}
+
 function Filter({
   onSubmit,
 }) {
+  const FETCH_INIT_DATA_ERROR_TEXT = 'Ошибка при загрузке данных предметов и городов:';
+  const FETCH_DISTRICTS_DATA_ERROR_TEXT = 'Ошибка при загрузке данных районов:';
 
-  const [subjects, setSubjects] = useState([]);
-  const [areas, setAreas] = useState([]);
-  const [districts, setDistricts] = useState([]);
-
-  const [isLoadingInitData, setIsLoadingInitData] = useState(false);
-  const [isLoadingDistrictsData, setIsLoadingDistrictsData] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     values,
@@ -30,34 +92,38 @@ function Filter({
 
   useEffect(() => {
     if (values.areaId) {
-      setDistricts([]);
-      setIsLoadingDistrictsData(true);
+      dispatch({ type: 'FETCH_DISTRICTS_DATA_START' });
       api.getDistricts(values.areaId)
         .then((data) => {
-          setDistricts(data.data);
+          dispatch({ type: 'FETCH_DISTRICTS_DATA_SUCCES', payload: data.data });
         })
         .catch((err) => {
-          console.log(err);
+          dispatch({
+            type: 'FETCH_DISTRICTS_DATA_ERROR',
+            payload: `${FETCH_DISTRICTS_DATA_ERROR_TEXT} ${err.message}`
+          });
         })
         .finally(() => {
-          setIsLoadingDistrictsData(false);
+          dispatch({ type: 'FETCH_DISTRICTS_DATA_FINALLY' });
         })
     }
   }, [values.areaId])
 
   useEffect(() => {
-    setIsLoadingInitData(true);
+    dispatch({ type: 'FETCH_INIT_DATA_START' });
     api.getInitialData()
       .then((data) => {
         const [subjects, areas] = data;
-        setSubjects(subjects.data);
-        setAreas(areas.data);
+        dispatch({ type: 'FETCH_INIT_DATA_SUCCES', payload: { subjects, areas } });
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        dispatch({
+          type: 'FETCH_INIT_DATA_ERROR',
+          payload: `${FETCH_INIT_DATA_ERROR_TEXT} ${err.message}`
+        });
       })
       .finally(() => {
-        setIsLoadingInitData(false);
+        dispatch({ type: 'FETCH_INIT_DATA_FINALLY' });
       })
   }, [])
 
@@ -65,24 +131,24 @@ function Filter({
     <form onSubmit={handleSubmit} className="form">
       <div className="form__container">
         <SelectInput
-          title={isLoadingInitData ? "Загрузка списка" : "Укажите предмет"}
-          optionsData={subjects}
+          title={state.isLoadingInitData ? "Загрузка списка" : "Укажите предмет"}
+          optionsData={state.subjects}
           propertyName="name"
           name="subjectId"
           onChange={handleChange}
           required={true}
         />
         <SelectInput
-          title={isLoadingInitData ? "Загрузка списка" : "Укажите город"}
-          optionsData={areas}
+          title={state.isLoadingInitData ? "Загрузка списка" : "Укажите город"}
+          optionsData={state.areas}
           propertyName="cityName"
           name="areaId"
           onChange={handleChange}
           required={true}
         />
         <SelectInput
-          title={isLoadingDistrictsData ? "Загрузка списка" : "Укажите район"}
-          optionsData={districts}
+          title={state.isLoadingDistrictsData ? "Загрузка списка" : "Укажите район"}
+          optionsData={state.districts}
           propertyName="name"
           name="districtId"
           onChange={handleChange}
@@ -91,8 +157,18 @@ function Filter({
       </div>
       <SubmitButton
         title="Применить фильтр"
-        disabled={!isValid || isLoadingInitData || isLoadingDistrictsData}
+        disabled={!isValid || state.isLoadingInitData || state.isLoadingDistrictsData}
       />
+      {
+        state.initDataFetchError && (
+          <FeedbackText text={state.initDataFetchError}/>
+        )
+      }
+      {
+        state.districtsDataFetchError && (
+          <FeedbackText text={state.districtsDataFetchError}/>
+        )
+      }
     </form>
   )
 }
