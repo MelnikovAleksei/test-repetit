@@ -8,9 +8,11 @@ import api from '../utils/api';
 const initialState = {
   tutorsData: [],
   tutorsPages: [],
+  initialPage: 0,
   nextPage: 0,
   hasMorePages: false,
-  isLoadingData: false,
+  isLoading: false,
+  errorText: null,
 };
 
 const reducer = (state, action) => {
@@ -18,54 +20,65 @@ const reducer = (state, action) => {
     case 'RESET_LIST':
       return {
         ...state,
+        initialPage: 0,
         nextPage: 0,
         hasMorePages: false,
-        tutorsData: []
-      }
-    case 'SET_TUTORS_DATA':
-      if (!state.tutorsPages[state.nextPage + 1]) {
-        return {
-          ...state,
-          hasMorePages: false,
-          tutorsData: [...state.tutorsData, ...action.payload]
-        }
-      } else {
-        return {
-          ...state,
-          hasMorePages: true,
-          nextPage: state.nextPage + 1,
-          tutorsData: [...state.tutorsData, ...action.payload]
-        }
-      }
-    case 'SET_IS_LOADING_DATA':
-      return {
-        ...state,
-        isLoadingData: action.payload,
-      }
-    case 'INCREMENT_PAGE':
-      return {
-        ...state,
-        nextPage: state.nextPage + 1,
+        tutorsPages: [],
+        tutorsData: [],
+        errorText: null,
       }
     case 'SET_TUTORS_PAGES':
       return {
         ...state,
         tutorsPages: action.payload,
       }
+    case 'FETCH_DATA_SUCCES':
+      if (!state.tutorsPages[state.nextPage + 1]) {
+        return {
+          ...state,
+          hasMorePages: false,
+          tutorsData: [...state.tutorsData, ...action.payload],
+          errorText: null,
+        }
+      } else {
+        return {
+          ...state,
+          hasMorePages: true,
+          nextPage: state.nextPage + 1,
+          tutorsData: [...state.tutorsData, ...action.payload],
+          errorText: null,
+        }
+      }
+    case 'FETCH_DATA_START':
+      return {
+        ...state,
+        isLoading: true,
+      }
+    case 'FETCH_DATA_FINALLY':
+        return {
+          ...state,
+          isLoading: false,
+        }
+    case 'FETCH_DATA_ERROR':
+      return {
+        ...state,
+        errorText: action.payload,
+      }
     default:
-      return state;
+      return {
+        state
+      }
   }
 }
 
 function ListTutors({
-  tutorsIds,
+  tutorsPages,
 }) {
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const INITIAL_PAGE = 0;
   const LOADING_TEXT = 'Загрузка данных...';
-
-  const NUM_CARDS_TO_RENDER = 10;
+  const LOADING_ERROR_TEXT = 'Произошла ошибка загрузки данных репетиторов:';
 
   const getUrlSearchParamsStr = (paramsArr) => {
     const params = new URLSearchParams();
@@ -75,58 +88,35 @@ function ListTutors({
     return params.toString();
   };
 
-  const getSubArrayBySize = (array, size = NUM_CARDS_TO_RENDER) => {
-    let result = [];
-    for (let index = 0; index < Math.ceil(array.length / size); index++) {
-      result[index] = array.slice((index * size), (index * size) + size);
-    }
-    return result;
-  }
-
   const handleShowMoreClick = () => {
-    dispatch({ type: 'SET_IS_LOADING_DATA', payload: true });
+    dispatch({ type: 'FETCH_DATA_START' });
     api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
       .then((data) => {
-        dispatch({ type: 'SET_TUTORS_DATA', payload: data.data });
+        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
       })
       .catch((err) => {
-        console.log(err);
+        dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
       .finally(() => {
-        dispatch({ type: 'SET_IS_LOADING_DATA', payload: false });
+        dispatch({ type: 'FETCH_DATA_FINALLY' });
       });
   }
-
-  useEffect(() => {
-    if (state.tutorsPages.length > 0) {
-      dispatch({ type: 'SET_IS_LOADING_DATA', payload: true });
-      api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
-        .then((data) => {
-          dispatch({ type: 'SET_TUTORS_DATA', payload: data.data });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          dispatch({ type: 'SET_IS_LOADING_DATA', payload: false });
-        });
-    }
-  }, [state.tutorsPages])
 
   useEffect(() => {
     dispatch({ type: 'RESET_LIST' });
-    if (tutorsIds.length >= 1) {
-      dispatch({
-        type: 'SET_TUTORS_PAGES',
-        payload: getSubArrayBySize(tutorsIds)
+    dispatch({ type: 'SET_TUTORS_PAGES', payload: tutorsPages });
+    dispatch({ type: 'FETCH_DATA_START' });
+    api.getTeachersShortData(getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
+      .then((data) => {
+        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+      })
+      .catch((err) => {
+        dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
+      })
+      .finally(() => {
+        dispatch({ type: 'FETCH_DATA_FINALLY' });
       });
-    } else {
-      dispatch({
-        type: 'SET_TUTORS_DATA',
-        payload: []
-      });
-    }
-  }, [tutorsIds])
+  }, [tutorsPages])
 
   return (
     <>
@@ -142,12 +132,17 @@ function ListTutors({
         }
       </ul>
       {
-        state.isLoadingData && (
+        state.isLoading && (
           <FeedbackText  text={LOADING_TEXT}/>
         )
       }
       {
-        state.hasMorePages && !state.isLoadingData && (
+        state.errorText && (
+          <FeedbackText text={state.errorText}/>
+        )
+      }
+      {
+        state.hasMorePages && !state.isLoading && (
           <ShowMoreButton
             title="Загрузить ещё"
             onClick={handleShowMoreClick}
