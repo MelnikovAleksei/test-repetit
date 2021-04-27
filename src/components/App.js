@@ -33,6 +33,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         errorText: action.payload,
+        isLoading: false,
       }
     default:
       return {

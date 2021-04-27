@@ -37,6 +37,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         initDataFetchError: action.payload,
+        isLoadingInitData: false,
       }
     case 'FETCH_DISTRICTS_DATA_START':
       return {
@@ -54,6 +55,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         districtsDataFetchError: action.payload,
+        isLoadingDistrictsData: false,
       }
     default:
       return {
