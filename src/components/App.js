@@ -48,7 +48,7 @@ const reducer = (state, action) => {
 function App() {
   const LOADING_TEXT = 'Загрузка списка репетиторов...';
   const TEACHERS_NOT_FOUND_TEXT = 'По заданным параметрам ничего не найдено';
-  const LOADING_ERROR_TEXT = 'Произошла ошибка при загрузке данных:';
+  const LOADING_ERROR_TEXT = 'Произошла ошибка при загрузке списка репетиторов:';
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -69,7 +69,7 @@ function App() {
         dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
       })
       .catch((err) => {
-        console.log(err);
+        dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
       .finally(() => {
         dispatch({ type: 'FETCH_DATA_FINALLY' });
