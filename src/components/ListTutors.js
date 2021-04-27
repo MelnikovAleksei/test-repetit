@@ -39,6 +39,7 @@ const reducer = (state, action) => {
           hasMorePages: false,
           tutorsData: [...state.tutorsData, ...action.payload],
           errorText: null,
+          isLoading: false,
         }
       } else {
         return {
@@ -47,6 +48,7 @@ const reducer = (state, action) => {
           nextPage: state.nextPage + 1,
           tutorsData: [...state.tutorsData, ...action.payload],
           errorText: null,
+          isLoading: false,
         }
       }
     case 'FETCH_DATA_START':
@@ -54,11 +56,6 @@ const reducer = (state, action) => {
         ...state,
         isLoading: true,
       }
-    case 'FETCH_DATA_FINALLY':
-        return {
-          ...state,
-          isLoading: false,
-        }
     case 'FETCH_DATA_ERROR':
       return {
         ...state,
@@ -97,9 +94,6 @@ function ListTutors({
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
-      .finally(() => {
-        dispatch({ type: 'FETCH_DATA_FINALLY' });
-      });
   }
 
   useEffect(() => {
@@ -113,9 +107,6 @@ function ListTutors({
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
-      .finally(() => {
-        dispatch({ type: 'FETCH_DATA_FINALLY' });
-      });
   }, [tutorsPages])
 
   return (

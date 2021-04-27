@@ -22,17 +22,13 @@ const reducer = (state, action) => {
         ...state,
         data: getSubArrayBySize(action.payload, NUM_CARDS_TO_RENDER),
         errorText: null,
+        isLoading: false,
       }
     case 'FETCH_DATA_START':
       return {
         ...state,
         isLoading: true,
       }
-    case 'FETCH_DATA_FINALLY':
-        return {
-          ...state,
-          isLoading: false,
-        }
     case 'FETCH_DATA_ERROR':
       return {
         ...state,
@@ -71,9 +67,6 @@ function App() {
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
-      .finally(() => {
-        dispatch({ type: 'FETCH_DATA_FINALLY' });
-      })
   };
 
   useEffect(() => {
@@ -84,9 +77,6 @@ function App() {
       })
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
-      })
-      .finally(() => {
-        dispatch({ type: 'FETCH_DATA_FINALLY' });
       })
   }, [])
 

@@ -31,16 +31,12 @@ const reducer = (state, action) => {
         subjects: subjects.data,
         areas: areas.data,
         initDataFetchError: null,
+        isLoadingInitData: false,
       }
     case 'FETCH_INIT_DATA_ERROR':
       return {
         ...state,
         initDataFetchError: action.payload,
-      }
-    case 'FETCH_INIT_DATA_FINALLY':
-      return {
-        ...state,
-        isLoadingInitData: false,
       }
     case 'FETCH_DISTRICTS_DATA_START':
       return {
@@ -58,11 +54,6 @@ const reducer = (state, action) => {
       return {
         ...state,
         districtsDataFetchError: action.payload,
-      }
-    case 'FETCH_DISTRICTS_DATA_FINALLY':
-      return {
-        ...state,
-        isLoadingDistrictsData: false,
       }
     default:
       return {
@@ -103,9 +94,6 @@ function Filter({
             payload: `${FETCH_DISTRICTS_DATA_ERROR_TEXT} ${err.message}`
           });
         })
-        .finally(() => {
-          dispatch({ type: 'FETCH_DISTRICTS_DATA_FINALLY' });
-        })
     }
   }, [values.areaId])
 
@@ -121,9 +109,6 @@ function Filter({
           type: 'FETCH_INIT_DATA_ERROR',
           payload: `${FETCH_INIT_DATA_ERROR_TEXT} ${err.message}`
         });
-      })
-      .finally(() => {
-        dispatch({ type: 'FETCH_INIT_DATA_FINALLY' });
       })
   }, [])
 
