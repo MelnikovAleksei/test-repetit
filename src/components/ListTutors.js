@@ -125,9 +125,6 @@ function ListTutors({
         type: 'SET_TUTORS_DATA',
         payload: []
       });
-      dispatch({
-        type: 'NO_MORE_PAGES'
-      })
     }
   }, [tutorsIds])
 
