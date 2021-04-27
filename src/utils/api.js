@@ -25,6 +25,13 @@ class Api {
     }).then(this._handleOriginalResponse)
   }
 
+  getInitialTeachersIds() {
+    return fetch(`${this._url}/search/teacherIds/?subjectId=1&areaId=1&districtId=1`, {
+      method: 'GET',
+      headers: this._headers,
+    }).then(this._handleOriginalResponse)
+  }
+
   getTeacherIds(params) {
     return fetch(`${this._url}/search/teacherIds/?${params}`, {
       method: 'GET',
