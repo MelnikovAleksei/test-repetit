@@ -1,29 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
 
 import api from '../utils/api';
 
+const initialState = {
+  tutorsData: [],
+  tutorsPages: [],
+  initialPage: 0,
+  nextPage: 0,
+  hasMorePages: false,
+  isLoading: false,
+  errorText: null,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'RESET_LIST':
+      return {
+        ...state,
+        initialPage: 0,
+        nextPage: 0,
+        hasMorePages: false,
+        tutorsPages: [],
+        tutorsData: [],
+        errorText: null,
+      }
+    case 'SET_TUTORS_PAGES':
+      return {
+        ...state,
+        tutorsPages: action.payload,
+      }
+    case 'FETCH_DATA_SUCCES':
+      if (!state.tutorsPages[state.nextPage + 1]) {
+        return {
+          ...state,
+          hasMorePages: false,
+          tutorsData: [...state.tutorsData, ...action.payload],
+          errorText: null,
+          isLoading: false,
+        }
+      } else {
+        return {
+          ...state,
+          hasMorePages: true,
+          nextPage: state.nextPage + 1,
+          tutorsData: [...state.tutorsData, ...action.payload],
+          errorText: null,
+          isLoading: false,
+        }
+      }
+    case 'FETCH_DATA_START':
+      return {
+        ...state,
+        isLoading: true,
+      }
+    case 'FETCH_DATA_ERROR':
+      return {
+        ...state,
+        errorText: action.payload,
+        isLoading: false,
+      }
+    default:
+      return {
+        state
+      }
+  }
+}
+
 function ListTutors({
-  tutorsIds,
+  tutorsPages,
 }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
+  const INITIAL_PAGE = 0;
   const LOADING_TEXT = 'Загрузка данных...';
+  const LOADING_ERROR_TEXT = 'Произошла ошибка загрузки данных репетиторов:';
 
-  const INIT_PAGE_NUMBER = 0;
-  const NUM_CARDS_TO_RENDER = 10;
-
-  const [tutorsPages, setTutorsPages] = useState(null);
-  const [tutorsData, setTutorsData] = useState([]);
-
-  const [curPage, setCurPage] = useState(0);
-
-  const [hasMorePages, setHasMorePages] = useState(false);
-
-  const [isLoadingTeachersData, setIsLoadingTeachersData] = useState(false);
-
-  const getUrlSearchTeachersParamsStr = (paramsArr) => {
+  const getUrlSearchParamsStr = (paramsArr) => {
     const params = new URLSearchParams();
     paramsArr.forEach((param, index) => {
       params.set(`Ids[${index}]`, param)
@@ -31,67 +86,35 @@ function ListTutors({
     return params.toString();
   };
 
-  const getSubArrayBySize = (array, size = NUM_CARDS_TO_RENDER) => {
-    let result = [];
-    for (let index = 0; index < Math.ceil(array.length / size); index++) {
-      result[index] = array.slice((index * size), (index * size) + size);
-    }
-    return result;
-  }
-
   const handleShowMoreClick = () => {
-    setIsLoadingTeachersData(true);
-    api.getTeachersShortData(getUrlSearchTeachersParamsStr(tutorsPages[curPage]))
+    dispatch({ type: 'FETCH_DATA_START' });
+    api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
       .then((data) => {
-        setTutorsData(prevState => [...prevState, ...data.data]);
-        setCurPage((prevState) => prevState + 1);
-        if (tutorsPages[curPage + 1] === undefined) {
-          setHasMorePages(false);
-        } else {
-          setHasMorePages(true);
-        }
+        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
       })
       .catch((err) => {
-        console.log(err);
+        dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
       })
-      .finally(() => {
-        setIsLoadingTeachersData(false);
-      });
   }
 
   useEffect(() => {
-    if (tutorsPages) {
-      setHasMorePages(tutorsPages.length > 1)
-      setCurPage(INIT_PAGE_NUMBER);
-      setIsLoadingTeachersData(true);
-      api.getTeachersShortData(getUrlSearchTeachersParamsStr(tutorsPages[INIT_PAGE_NUMBER]))
-        .then((data) => {
-          setTutorsData(data.data);
-          setCurPage((prevState) => prevState + 1);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoadingTeachersData(false);
-        });
-    }
+    dispatch({ type: 'RESET_LIST' });
+    dispatch({ type: 'SET_TUTORS_PAGES', payload: tutorsPages });
+    dispatch({ type: 'FETCH_DATA_START' });
+    api.getTeachersShortData(getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
+      .then((data) => {
+        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+      })
+      .catch((err) => {
+        dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
+      })
   }, [tutorsPages])
-
-  useEffect(() => {
-    if (tutorsIds.length >= 1) {
-      setTutorsPages(getSubArrayBySize(tutorsIds));
-    } else {
-      setTutorsData([]);
-      setHasMorePages(false);
-    }
-  }, [tutorsIds])
 
   return (
     <>
       <ul className="list-tutors">
         {
-          tutorsData.map(data => (
+          state.tutorsData.map(data => (
             <li className="list-tutors__item" key={data.id}>
               <CardTutor
                 tutorData={data}
@@ -101,16 +124,21 @@ function ListTutors({
         }
       </ul>
       {
-        isLoadingTeachersData && (
+        state.isLoading && (
           <FeedbackText  text={LOADING_TEXT}/>
         )
       }
       {
-        hasMorePages && !isLoadingTeachersData && (
+        state.errorText && (
+          <FeedbackText text={state.errorText}/>
+        )
+      }
+      {
+        state.hasMorePages && !state.isLoading && (
           <ShowMoreButton
             title="Загрузить ещё"
             onClick={handleShowMoreClick}
-            disabled={isLoadingTeachersData}
+            disabled={state.isLoadingData}
           />
         )
       }
@@ -118,4 +146,4 @@ function ListTutors({
   )
 }
 
-export default ListTutors
+export default ListTutors;
