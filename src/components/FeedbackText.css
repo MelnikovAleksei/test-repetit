@@ -1,0 +1,21 @@
+.feedback-text-container {
+  box-sizing: border-box;
+  padding: 23px 21px 10px 21px;
+}
+
+.feedback-text {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1.18;
+  color: #009990;
+}
+
+@media screen and (min-width: 1152px) {
+  .feedback-text-container {
+    padding: 41px 40px 20px 40px;
+    max-width: 1152px;
+    margin: 0 auto;
+  }
+}
