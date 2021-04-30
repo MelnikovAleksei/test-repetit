@@ -7,6 +7,9 @@ import api from '../utils/api';
 
 import { getSubArrayBySize } from '../utils/helpers/getSubArrayBySize';
 
+import { ThemeProvider} from "styled-components";
+import * as theme  from '../config/theme';
+
 const NUM_CARDS_TO_RENDER = 10;
 
 const initialState = {
@@ -82,28 +85,31 @@ function App() {
   }, [])
 
   return (
-    <section>
-      <Filter
-        onSubmit={handleSubmit}
-      />
-      {
-        state.isLoading && (
-        <FeedbackText text={LOADING_TEXT}/>
-        )
-      }
-      {
-        state.errorText && (
-          <FeedbackText text={state.errorText} />
-        )
-      }
-      {
-        state.data.length ? (
-          <ListTutors tutorsPages={state.data}/>
-        ) : (
-          !state.isLoading && ( <FeedbackText text={TEACHERS_NOT_FOUND_TEXT}/> )
-        )
-      }
-    </section>
+    <ThemeProvider theme={theme}>
+      <section>
+        <Filter
+          onSubmit={handleSubmit}
+        />
+        {
+          state.isLoading && (
+            <FeedbackText text={LOADING_TEXT}/>
+          )
+        }
+        {
+          state.errorText && (
+            <FeedbackText text={state.errorText} />
+          )
+        }
+        {
+          state.data.length ? (
+            <ListTutors tutorsPages={state.data}/>
+          ) : (
+            !state.isLoading && ( <FeedbackText text={TEACHERS_NOT_FOUND_TEXT}/> )
+          )
+        }
+      </section>
+    </ThemeProvider>
+
   );
 }
 

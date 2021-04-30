@@ -1,9 +1,34 @@
 import React, { useEffect, useReducer } from 'react';
+import styled from 'styled-components';
 import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
 
 import api from '../utils/api';
+import { device } from "../shared/device";
+
+const List = styled.ul`
+  padding: 23px 21px 10px 21px;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+
+  @media ${device.desktop} {
+    padding-bottom: 77px;
+    max-width: 1152px;
+    margin: 0 auto;
+  }
+`;
+
+const ListItem = styled.li`
+  box-sizing: border-box;
+  margin-bottom: 8px;
+
+  @media ${device.desktop} {
+    max-width: 850px;
+    margin: 0 auto 20px auto;
+  }
+`;
 
 const initialState = {
   tutorsData: [],
@@ -112,17 +137,17 @@ function ListTutors({
 
   return (
     <>
-      <ul className="list-tutors">
+      <List>
         {
           state.tutorsData.map(data => (
-            <li className="list-tutors__item" key={data.id}>
+            <ListItem key={data.id}>
               <CardTutor
                 tutorData={data}
               />
-            </li>
+            </ListItem>
           ))
         }
-      </ul>
+      </List>
       {
         state.isLoading && (
           <FeedbackText  text={LOADING_TEXT}/>
