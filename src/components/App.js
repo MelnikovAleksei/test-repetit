@@ -3,7 +3,7 @@ import Filter from './Filter';
 import ListTutors from './ListTutors';
 import FeedbackText from './FeedbackText';
 
-import api from '../utils/api';
+import api from '../utils/api.ts';
 
 import { getSubArrayBySize } from '../utils/helpers/getSubArrayBySize';
 
@@ -17,7 +17,7 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FETCH_DATA_SUCCES':
+    case 'FETCH_DATA_SUCCESS':
       return {
         ...state,
         data: getSubArrayBySize(action.payload, NUM_CARDS_TO_RENDER),
@@ -42,6 +42,11 @@ const reducer = (state, action) => {
   }
 }
 
+const REQUEST_TYPES = {
+  INIT_TEACHERS_IDS: 'INIT_TEACHERS_IDS',
+  TEACHERS_IDS: 'TEACHERS_IDS',
+};
+
 function App() {
   const LOADING_TEXT = 'Загрузка списка репетиторов...';
   const TEACHERS_NOT_FOUND_TEXT = 'По заданным параметрам ничего не найдено';
@@ -61,9 +66,9 @@ function App() {
     dispatch({ type: 'FETCH_DATA_START' });
     const filterParamsArr = Object.keys(data).map(key => [key, data[key]]);
     const filterParams = getUrlFilterParamsStr(filterParamsArr)
-    api.getTeacherIds(filterParams)
+    api.request(REQUEST_TYPES.TEACHERS_IDS, filterParams)
       .then((data) => {
-        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data.data });
       })
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
@@ -72,9 +77,9 @@ function App() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_DATA_START' });
-    api.getInitialTeachersIds()
+    api.request(REQUEST_TYPES.INIT_TEACHERS_IDS)
       .then((data) => {
-        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data.data });
       })
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
