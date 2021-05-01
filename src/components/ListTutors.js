@@ -3,7 +3,7 @@ import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
 
-import api from '../utils/api';
+import api from '../utils/api.ts';
 
 const initialState = {
   tutorsData: [],
@@ -32,7 +32,7 @@ const reducer = (state, action) => {
         ...state,
         tutorsPages: action.payload,
       }
-    case 'FETCH_DATA_SUCCES':
+    case 'FETCH_DATA_SUCCESS':
       if (!state.tutorsPages[state.nextPage + 1]) {
         return {
           ...state,
@@ -69,9 +69,14 @@ const reducer = (state, action) => {
   }
 }
 
+const REQUEST_TYPES = {
+  TEACHERS_SHORT_DATA: 'TEACHERS_SHORT_DATA',
+};
+
 function ListTutors({
   tutorsPages,
 }) {
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const INITIAL_PAGE = 0;
@@ -88,9 +93,9 @@ function ListTutors({
 
   const handleShowMoreClick = () => {
     dispatch({ type: 'FETCH_DATA_START' });
-    api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
+    api.request(REQUEST_TYPES.TEACHERS_SHORT_DATA, getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
       .then((data) => {
-        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data.data });
       })
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
@@ -101,9 +106,9 @@ function ListTutors({
     dispatch({ type: 'RESET_LIST' });
     dispatch({ type: 'SET_TUTORS_PAGES', payload: tutorsPages });
     dispatch({ type: 'FETCH_DATA_START' });
-    api.getTeachersShortData(getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
+    api.request(REQUEST_TYPES.TEACHERS_SHORT_DATA, getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
       .then((data) => {
-        dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
+        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data.data });
       })
       .catch((err) => {
         dispatch({ type: 'FETCH_DATA_ERROR', payload: `${LOADING_ERROR_TEXT} ${err.message}` });
