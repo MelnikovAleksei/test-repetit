@@ -6,7 +6,6 @@ const FeedbackTextContainer = styled.div`
   padding: 10px 21px 65px 21px;
   max-width: 1152px;
   margin: 0 auto;
-  outline: 1px solid;
 `;
 
 const FeedbackTextPara = styled.p`
