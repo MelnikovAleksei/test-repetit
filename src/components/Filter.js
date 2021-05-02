@@ -5,7 +5,7 @@ import SelectInput from './SelectInput';
 import SubmitButton from './SubmitButton';
 import FeedbackText from './FeedbackText';
 
-import api from '../utils/api';
+import api from '../utils/api.ts';
 
 import useFormValidation from '../hooks/useFormValidation';
 
@@ -50,7 +50,7 @@ const reducer = (state, action) => {
         ...state,
         isLoadingInitData: true,
       }
-    case 'FETCH_INIT_DATA_SUCCES':
+    case 'FETCH_INIT_DATA_SUCCESS':
       const { subjects, areas } = action.payload;
       return {
         ...state,
@@ -70,7 +70,7 @@ const reducer = (state, action) => {
         ...state,
         isLoadingDistrictsData: true,
       }
-    case 'FETCH_DISTRICTS_DATA_SUCCES':
+    case 'FETCH_DISTRICTS_DATA_SUCCESS':
         return {
           ...state,
           isLoadingDistrictsData: false,
@@ -89,6 +89,12 @@ const reducer = (state, action) => {
       }
   }
 }
+
+const REQUEST_TYPES = {
+  AREAS_IDS: 'AREAS_IDS',
+  SUBJECTS_IDS: 'SUBJECTS_IDS',
+  DISTRICTS_IDS: 'DISTRICTS_IDS',
+};
 
 function Filter({
   onSubmit,
@@ -112,9 +118,9 @@ function Filter({
   useEffect(() => {
     if (values.areaId) {
       dispatch({ type: 'FETCH_DISTRICTS_DATA_START' });
-      api.getDistricts(values.areaId)
+      api.request(REQUEST_TYPES.DISTRICTS_IDS, values.areaId)
         .then((data) => {
-          dispatch({ type: 'FETCH_DISTRICTS_DATA_SUCCES', payload: data.data });
+          dispatch({ type: 'FETCH_DISTRICTS_DATA_SUCCESS', payload: data.data });
         })
         .catch((err) => {
           dispatch({
@@ -127,10 +133,13 @@ function Filter({
 
   useEffect(() => {
     dispatch({ type: 'FETCH_INIT_DATA_START' });
-    api.getInitialData()
+    Promise.all([
+      api.request(REQUEST_TYPES.SUBJECTS_IDS),
+      api.request(REQUEST_TYPES.AREAS_IDS)
+    ])
       .then((data) => {
         const [subjects, areas] = data;
-        dispatch({ type: 'FETCH_INIT_DATA_SUCCES', payload: { subjects, areas } });
+        dispatch({ type: 'FETCH_INIT_DATA_SUCCESS', payload: { subjects, areas } });
       })
       .catch((err) => {
         dispatch({
