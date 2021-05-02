@@ -5,7 +5,7 @@ import FeedbackText from './FeedbackText';
 
 import api from '../utils/api.ts';
 
-import { getSubArrayBySize } from '../utils/helpers/getSubArrayBySize';
+import getSubArrayBySize from '../utils/helpers/getSubArrayBySize';
 
 const NUM_CARDS_TO_RENDER = 10;
 
