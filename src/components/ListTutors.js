@@ -1,34 +1,11 @@
 import React, { useEffect, useReducer } from 'react';
-import styled from 'styled-components';
 import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
+import styled from 'styled-components';
+import { device } from '../shared/device';
 
 import api from '../utils/api';
-import { device } from "../shared/device";
-
-const List = styled.ul`
-  padding: 23px 21px 10px 21px;
-  margin: 0;
-  box-sizing: border-box;
-  list-style: none;
-
-  @media ${device.desktop} {
-    padding-bottom: 77px;
-    max-width: 1152px;
-    margin: 0 auto;
-  }
-`;
-
-const ListItem = styled.li`
-  box-sizing: border-box;
-  margin-bottom: 8px;
-
-  @media ${device.desktop} {
-    max-width: 850px;
-    margin: 0 auto 20px auto;
-  }
-`;
 
 const initialState = {
   tutorsData: [],
@@ -94,6 +71,31 @@ const reducer = (state, action) => {
   }
 }
 
+const REQUEST_TYPES = {
+  TEACHERS_SHORT_DATA: 'TEACHERS_SHORT_DATA',
+};
+
+const List = styled.ul`
+  padding: 23px 21px 10px 21px;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  @media ${device.desktop} {
+    padding-bottom: 77px;
+    max-width: 1152px;
+    margin: 0 auto;
+  }
+`;
+
+const ListItem = styled.li`
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  @media ${device.desktop} {
+    max-width: 850px;
+    margin: 0 auto 20px auto;
+  }
+`;
+
 function ListTutors({
   tutorsPages,
 }) {
@@ -113,7 +115,7 @@ function ListTutors({
 
   const handleShowMoreClick = () => {
     dispatch({ type: 'FETCH_DATA_START' });
-    api.getTeachersShortData(getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
+    api.request(REQUEST_TYPES.TEACHERS_SHORT_DATA, getUrlSearchParamsStr(state.tutorsPages[state.nextPage]))
       .then((data) => {
         dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
       })
@@ -126,7 +128,7 @@ function ListTutors({
     dispatch({ type: 'RESET_LIST' });
     dispatch({ type: 'SET_TUTORS_PAGES', payload: tutorsPages });
     dispatch({ type: 'FETCH_DATA_START' });
-    api.getTeachersShortData(getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
+    api.request(REQUEST_TYPES.TEACHERS_SHORT_DATA, getUrlSearchParamsStr(tutorsPages[INITIAL_PAGE]))
       .then((data) => {
         dispatch({ type: 'FETCH_DATA_SUCCES', payload: data.data });
       })
