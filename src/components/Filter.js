@@ -1,4 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
+import styled from 'styled-components';
+import { device } from '../shared/device';
 import SelectInput from './SelectInput';
 import SubmitButton from './SubmitButton';
 import FeedbackText from './FeedbackText';
@@ -6,6 +8,30 @@ import FeedbackText from './FeedbackText';
 import api from '../utils/api';
 
 import useFormValidation from '../hooks/useFormValidation';
+
+const Form = styled.form`
+  box-sizing: border-box;
+  padding: 23px 21px 10px 21px;
+
+  @media ${device.desktop} {
+    padding: 41px 40px 20px 40px;
+    max-width: 1152px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+  }
+`;
+
+const FormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  @media ${device.desktop} {
+    display: grid;
+    grid-template-columns: repeat(3, 277px);
+    gap: 18px;
+  }
+`;
 
 const initialState = {
   isLoadingInitData: false,
@@ -115,8 +141,8 @@ function Filter({
   }, [])
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <div className="form__container">
+    <Form onSubmit={handleSubmit}>
+      <FormContainer>
         <SelectInput
           title={state.isLoadingInitData ? "Загрузка списка" : "Укажите предмет"}
           optionsData={state.subjects}
@@ -141,7 +167,7 @@ function Filter({
           onChange={handleChange}
           required={true}
         />
-      </div>
+      </FormContainer>
       <SubmitButton
         title="Применить фильтр"
         disabled={!isValid || state.isLoadingInitData || state.isLoadingDistrictsData}
@@ -156,7 +182,7 @@ function Filter({
           <FeedbackText text={state.districtsDataFetchError}/>
         )
       }
-    </form>
+    </Form>
   )
 }
 
