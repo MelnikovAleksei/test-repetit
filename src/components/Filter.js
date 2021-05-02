@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
 import styled from 'styled-components';
-import { device } from '../shared/device';
 import SelectInput from './SelectInput';
 import SubmitButton from './SubmitButton';
 import FeedbackText from './FeedbackText';
@@ -13,7 +12,7 @@ const Form = styled.form`
   box-sizing: border-box;
   padding: 23px 21px 10px 21px;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     padding: 41px 40px 20px 40px;
     max-width: 1152px;
     margin: 0 auto;
@@ -26,7 +25,7 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     display: grid;
     grid-template-columns: repeat(3, 277px);
     gap: 18px;

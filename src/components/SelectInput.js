@@ -1,13 +1,12 @@
 import React from 'react';
 import { ReactComponent as SelectIcon } from '../images/select-input-icon.svg';
 import styled from 'styled-components';
-import { device } from '../shared/device'
 
 const SelectContainer = styled.div`
   position: relative;
   margin-bottom: 8px;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     margin-bottom: 0px;
   }
 `;
@@ -21,12 +20,12 @@ const SelectIconContainer = styled.div`
 `;
 
 const Select = styled.select`
-  font-family: ${props => props.theme.primFontFamily};
+  font-family: ${props => props.theme.fonts.main};
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
   line-height: 1.14;
-  color: ${props => props.theme.primColorGreen};
+  color: ${props => props.theme.colors.main};
   appearance: none;
   border: none;
   outline: none;
@@ -36,29 +35,29 @@ const Select = styled.select`
   height: 45px;
   cursor: pointer;
   box-sizing: border-box;
-  background-color: ${props => props.theme.primColorWhite};
-  border: 2px solid ${props => props.theme.primColorGreen};
+  background-color: ${props => props.theme.colors.secondary};
+  border: 2px solid ${props => props.theme.colors.main};
   border-radius: 5px;
   transition: all .3s ease;
 
   &:hover,
   &:focus {
-    color: ${props => props.theme.primColorWhite};
-    background-color: ${props => props.theme.primColorGreen};
+    color: ${props => props.theme.colors.secondary};
+    background-color: ${props => props.theme.colors.main};
   }
 
   &:hover ~ div svg path,
   &:focus ~ div svg path {
-    fill: ${props => props.theme.primColorWhite};
+    fill: ${props => props.theme.colors.secondary};
   }
 
   &:disabled {
     cursor: not-allowed;
-    color: ${props => props.theme.primDisabledColor};
-    background-color: ${props => props.theme.primColorWhite};
+    color: ${props => props.theme.colors.main};
+    background-color: ${props => props.theme.colors.secondary};
   }
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     max-width: 277px;
     font-size: 16px;
     line-height: 1.18;

@@ -9,12 +9,12 @@ const FeedbackTextContainer = styled.div`
 `;
 
 const FeedbackTextPara = styled.p`
-  font-family: ${props => props.theme.primFontFamily};
+  font-family: ${props => props.theme.fonts.main};
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
   line-height: 1.18;
-  color: ${props => props.theme.primColorGreen};
+  color: ${props => props.theme.colors.main};
 `;
 
 function FeedbackText({

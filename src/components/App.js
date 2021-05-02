@@ -8,7 +8,7 @@ import api from '../utils/api.ts';
 import getSubArrayBySize from '../utils/helpers/getSubArrayBySize';
 
 import { ThemeProvider} from "styled-components";
-import * as theme  from '../config/theme';
+import theme  from '../config/theme';
 
 const NUM_CARDS_TO_RENDER = 10;
 

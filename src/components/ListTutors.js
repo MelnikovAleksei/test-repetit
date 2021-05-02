@@ -3,7 +3,6 @@ import CardTutor from './CardTutor';
 import FeedbackText from './FeedbackText';
 import ShowMoreButton from './ShowMoreButton';
 import styled from 'styled-components';
-import { device } from '../shared/device';
 
 import api from '../utils/api';
 
@@ -80,7 +79,7 @@ const List = styled.ul`
   margin: 0;
   box-sizing: border-box;
   list-style: none;
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     padding-bottom: 77px;
     max-width: 1152px;
     margin: 0 auto;
@@ -90,7 +89,7 @@ const List = styled.ul`
 const ListItem = styled.li`
   box-sizing: border-box;
   margin-bottom: 8px;
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     max-width: 850px;
     margin: 0 auto 20px auto;
   }

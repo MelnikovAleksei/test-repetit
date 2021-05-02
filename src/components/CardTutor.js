@@ -1,7 +1,6 @@
 import React from 'react';
 import NotAllowedImage from '../images/not-allowed-image.png';
 import styled from 'styled-components';
-import {device} from "../shared/device";
 
 const Article = styled.article`
   padding: 11px 9px;
@@ -19,7 +18,7 @@ const ArticleImage = styled.img`
   border-radius: 50%;
   padding: 6px 7px;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     min-width: 78px;
     height: 78px;
   }
@@ -33,7 +32,7 @@ const ArticleContainer = styled.div`
 `;
 
 const ArticleTitle = styled.h3`
-  font-family: ${props => props.theme.primFontFamily};
+  font-family: ${props => props.theme.fonts.main};
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -43,7 +42,7 @@ const ArticleTitle = styled.h3`
   margin: 0;
   padding: 4px;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     font-size: 18px;
     line-height: 1.16;
     padding-top: 5px;
@@ -52,7 +51,7 @@ const ArticleTitle = styled.h3`
 `;
 
 const ArticleSubtitle = styled.p`
-  font-family: ${props => props.theme.primFontFamily};
+  font-family: ${props => props.theme.fonts.main};
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
@@ -62,7 +61,7 @@ const ArticleSubtitle = styled.p`
   margin: 0;
   padding: 4px 4px 1px 4px;
 
-  @media ${device.desktop} {
+  @media ${props => props.theme.device.size.large} {
     font-size: 20px;
     line-height: 1.15;
     padding-top: 5px;
@@ -71,18 +70,18 @@ const ArticleSubtitle = styled.p`
 `;
 
 const ArticleText = styled.p`
-  font-family: ${props => props.theme.primFontFamily};
+  font-family: ${props => props.theme.fonts.main};
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
   line-height: 1.18;
-  color: #009990;
+  color: ${props => props.theme.colors.main};
   box-sizing: border-box;
   margin: 0;
   padding: 0 4px;
 
-  @media ${device.desktop} {
-    color: ${props => props.theme.primColorGreen};
+  @media ${props => props.theme.device.size.large} {
+    color: ${props => props.theme.colors.main};
     font-size: 20px;
     line-height: 1.15;
   }
