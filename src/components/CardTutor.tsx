@@ -87,30 +87,50 @@ const ArticleText = styled.p`
   }
 `;
 
+interface SubjectInterface {
+  name: string;
+}
+
+interface TeachingSubjectInterface {
+  subject: SubjectInterface;
+  price: number;
+}
+
+interface TutorDataInterface {
+  firstName: string;
+  patrName: string;
+  statusName: string;
+  hasPhoto: boolean;
+  photoPathLarge: string;
+  teachingSubjects: TeachingSubjectInterface[];
+}
+
 function CardTutor({
   tutorData,
+}: {
+  tutorData: TutorDataInterface,
 }) {
 
-  const getName = (data) => {
+  const getName = (data: TutorDataInterface): string => {
     return `${data.firstName} ${data.patrName}`;
   };
 
-  const getImgAltText = (data) => {
+  const getImgAltText = (data: TutorDataInterface): string => {
     return `На фотографии ${data.statusName} ${getName(data)}`;
   };
 
-  const getImgUrl = (data) => {
+  const getImgUrl = (data: TutorDataInterface): string => {
     return data.hasPhoto ?
       `http:${data.photoPathLarge}` : NotAllowedImage;
   };
 
-  const getSubjects = (data) => {
+  const getSubjects = (data: TutorDataInterface) => {
     return data.teachingSubjects.map((elem, index, array) => (
       array.length - 1 === index ? `${elem.subject.name}` : `${elem.subject.name}; `
     ))
   };
 
-  const getMinPrice = (data) => {
+  const getMinPrice = (data: TutorDataInterface) => {
     return `от ${Math.min.apply(null, data.teachingSubjects.map(elem => Number(elem.price))).toString()} р`;
   };
 

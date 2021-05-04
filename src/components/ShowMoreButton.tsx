@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {MouseEventHandler} from 'react';
 import styled from 'styled-components';
 
 const ShowMoreBtnContainer = styled.div`
@@ -39,7 +39,8 @@ const ShowMoreBtn = styled.button`
   }
 
   @media ${props => props.theme.device.size.large} {
-    min-width: 336px;
+    min-width: auto;
+    width: 336px;
     font-size: 16px;
     line-height: 1.18;
   }
@@ -49,6 +50,10 @@ function ShowMoreButton({
   title,
   onClick,
   disabled,
+}: {
+  title: string,
+  onClick: MouseEventHandler<HTMLButtonElement> | undefined,
+  disabled: boolean
 }) {
   return (
     <ShowMoreBtnContainer>

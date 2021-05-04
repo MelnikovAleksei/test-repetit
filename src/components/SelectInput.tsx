@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ChangeEventHandler} from 'react';
 import { ReactComponent as SelectIcon } from '../images/select-input-icon.svg';
 import styled from 'styled-components';
 
@@ -64,6 +64,31 @@ const Select = styled.select`
   }
 `;
 
+interface OptionsDataInterface {
+  timeZone: number;
+  namePrep: string;
+  nameGen: string;
+  regionName: string;
+  cityName: string;
+  name: string;
+  id: number;
+}
+
+enum PropertyName {
+  City = 'cityName',
+  Name = 'name',
+}
+
+interface SelectInputInterface {
+  title: string;
+  optionsData: OptionsDataInterface[];
+  propertyName: PropertyName;
+  disabled: boolean;
+  onChange: ChangeEventHandler<HTMLSelectElement> | undefined;
+  name: string;
+  required: boolean;
+}
+
 function SelectInput({
   title,
   optionsData,
@@ -72,7 +97,12 @@ function SelectInput({
   onChange,
   name,
   required,
-}) {
+}: SelectInputInterface) {
+
+  const getPropertyValue = (option: OptionsDataInterface, propertyName: PropertyName): string => {
+    return option[propertyName];
+  }
+
   return (
     <SelectContainer>
       <Select
@@ -91,7 +121,7 @@ function SelectInput({
               key={option.id}
               value={option.id}
             >
-              {option[propertyName]}
+              {getPropertyValue(option, propertyName)}
             </option>
           ))
         }

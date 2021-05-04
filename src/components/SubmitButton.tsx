@@ -31,7 +31,7 @@ const Button = styled.button`
   }
 
   @media ${props => props.theme.device.size.large} {
-    min-width: 188px;
+    min-width: auto;
     font-size: 16px;
     line-height: 1.18;
     padding-left: 22px;
@@ -44,6 +44,9 @@ const Button = styled.button`
 function SubmitButton({
   title,
   disabled,
+}: {
+  title: string,
+  disabled: boolean,
 }) {
   return (
     <Button disabled={disabled} type="submit">

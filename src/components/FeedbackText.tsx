@@ -19,6 +19,8 @@ const FeedbackTextPara = styled.p`
 
 function FeedbackText({
   text,
+}: {
+  text: string
 }) {
   return (
     <FeedbackTextContainer>
