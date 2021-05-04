@@ -13,7 +13,7 @@ const Form = styled.form`
   padding: 23px 21px 10px 21px;
 
   @media ${props => props.theme.device.size.large} {
-    padding: 41px 40px 20px 40px;
+    padding: 41px 39px 20px 39px;
     max-width: 1152px;
     margin: 0 auto;
     display: flex;
